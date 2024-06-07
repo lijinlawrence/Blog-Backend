@@ -7,9 +7,9 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    about:{
-        type: String,
-        required: true,
+    about: {
+      type: String,
+      required: true,
     },
 
     body: {
@@ -24,10 +24,13 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    name:{
-        type: String,
-        required: true,
+    name: {
+      type: String,
+      required: true,
     },
+
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, 
+                  ref: "User" }],
 
     createdAt: {
       type: Date,

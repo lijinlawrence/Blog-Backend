@@ -1,6 +1,6 @@
 
 import express  from 'express'
-import { createPost, deletePost, favoritePost, getAllPosts, getSinglePost, getUserPost } from '../controller/postController.js'
+import {  createPost, deletePost, favoritePost,  getAllPosts,  getSinglePost, getUserFavoritePosts, getUserPost, updatePost } from '../controller/postController.js'
 import extractUserId  from '../middleware/jwtMiddleware.js'
 const router = express.Router()
 
@@ -10,7 +10,12 @@ router.get('/',getAllPosts)
 router.get('/:id',getSinglePost)
 router.get('/userPost/:userId',extractUserId,getUserPost)
 router.delete('/:id',extractUserId,deletePost)
-router.post ('/favorite/:id',extractUserId,favoritePost)
+router.put('/updatePost/:id', extractUserId, updatePost);
+
+router.put('/favorite/:id', extractUserId, favoritePost);
+router.get('/favorites', extractUserId, getUserFavoritePosts);
+
+
 
 
 
