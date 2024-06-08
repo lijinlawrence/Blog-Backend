@@ -1,61 +1,61 @@
-import User from "../model/userSchema.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+  import User from "../model/userSchema.js";
+  import jwt from "jsonwebtoken";
+  import bcrypt from "bcrypt";
 
-// regsister USer
+  // regsister USer
 
-export const createUser = async (req, res, next) => {
-  const { name, email, password } = req.body;
-  console.log(name, email, password);
+  export const createUser = async (req, res, next) => {
+    const { name, email, password } = req.body;
+    console.log(name, email, password);
 
-  if (!name || !email || !password) {
-    res.status(400);
-    const err = new Error("Please provide name,email and pasword");
-    return next(err);
-  }
-
-  if (password.length < 8) {
-    res.status(400);
-    const err = new Error("password ,must be atleast 8 character");
-    return next(err);
-  }
-
-  const emailRegex = /^\S+@\S+\.\S+$/;
-  if (!emailRegex.test(email)) {
-    res.status(400);
-    const err = new Error("Invalid email address");
-    return next(err);
-  }
-
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (!name || !email || !password) {
       res.status(400);
-      const err = new Error(
-        "Email already registered, Please provide another email"
-      );
+      const err = new Error("Please provide name,email and pasword");
       return next(err);
     }
-    const user = await User.create({
-      name,
-      email,
-      password,
-      bio: "",
-      image: "",
-    });
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        password: user.password,
-        bio: user.bio,
-        image: user.image,
-      });
+
+    if (password.length < 8) {
+      res.status(400);
+      const err = new Error("Password ,must be atleast 8 character");
+      return next(err);
     }
-  } catch (error) {
-    res.status(500).json({ error: error.message }) || "internal server error";
-  }
-};
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      const err = new Error("Invalid email address");
+      return next(err);
+    }
+
+    try {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        res.status(400);
+        const err = new Error(
+          "Email already registered, Please provide another email"
+        );
+        return next(err);
+      }
+      const user = await User.create({
+        name,
+        email,
+        password,
+        bio: "",
+        image: "",
+      });
+      if (user) {
+        res.status(201).json({
+          _id: user._id,
+          name: user.name,
+          password: user.password,
+          bio: user.bio,
+          image: user.image,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message }) || "internal server error";
+    }
+  };
 
 // login User
 
