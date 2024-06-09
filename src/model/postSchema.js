@@ -29,7 +29,7 @@ const postSchema = mongoose.Schema(
       required: true,
     },
 
-    favorites: [{ type: mongoose.Schema.Types.ObjectId, 
+    favorites: [{ type: String, 
                   ref: "User" }],
 
     createdAt: {
