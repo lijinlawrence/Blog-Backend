@@ -107,7 +107,7 @@ export const getUserProfile = async (req, res) => {
 // Update User Profile
 export const updateUserProfile = async (req, res, next) => {
   const userId = req.payload;
-  const { name, email, password, bio } = req.body;
+  const { name,  password, bio } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -122,7 +122,7 @@ export const updateUserProfile = async (req, res, next) => {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
     }
-    if (req.file) user.image = `/uploads/${req.file.filename}`;
+    if (req.file) user.image = req.file.filename
     if (bio) user.bio = bio;
 
     await user.save();

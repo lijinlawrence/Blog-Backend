@@ -1,27 +1,29 @@
-import multer from 'multer';
-import path from 'path';
+import multer from 'multer'
 
+
+// for storage
 const storage = multer.diskStorage({
-  destination: './uploads/',
-  filename: function(req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 }, // Limit file size to 1MB
-  fileFilter: function(req, file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb('Error: Images Only!');
+    destination:(req,file,callback)=>{
+        callback(null,'./uploads')
+    },
+    filename:(req,file,callback)=>{
+        const filename = `image-${Date.now()}-${file.originalname}`
+        callback(null,filename)
     }
-  }
-});
+})
 
-export default upload;
+const fileFilter = (req,file,callback)=>{
+    if(file.mimetype === 'image/png' || file.mimetype ==='image/jpg' || file.mimetype ==='image/jpeg' ){
+        callback(null,true)
+    }else{
+        callback(null,false)
+        return callback(new Error("only png/jpg/jpeg files are allowed"))
+    }
+}
+
+
+const multerConfig= multer({
+    storage,fileFilter
+})
+
+export default multerConfig;

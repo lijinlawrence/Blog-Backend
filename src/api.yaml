@@ -1,0 +1,625 @@
+openapi: "3.0.0"
+info:
+  title: Blog API
+  description: This is a documentation of the blog application API
+  termsOfService: http://example.com/terms
+  contact:
+    name: API Support
+    url: http://example.com/support
+  license:
+    name: Example License
+    url: http://example.com/license.html
+  version: 1.0.0
+servers:
+  - url: "http://localhost:7000"
+    description: Local Server
+tags:
+  - name: Users
+    description: Operations about users
+  - name: Posts
+    description: Operations of posts
+
+paths:
+  /api/users:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      description: This endpoint allows you to create a new user.
+      requestBody:
+        description: User object that needs to be added to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  name:
+                    type: string
+                    example: "John Doe"
+                  email:
+                    type: string
+                    example: "john.doe@example.com"
+                  bio:
+                    type: string
+                    example: ""
+                  image:
+                    type: string
+                    example: ""
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: This endpoint retrieves all user IDs.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "60c72b2f9b1e8e1f3c8f9e1f"
+        "500":
+          description: Internal Server Error
+
+    delete:
+      tags:
+        - Users
+      summary: Delete all users
+      description: This endpoint deletes all users.
+      responses:
+        "200":
+          description: All users deleted successfully
+        "500":
+          description: Internal Server Error
+
+  /api/users/login:
+    post:
+      tags:
+        - Users
+      summary: Login a user
+      description: This endpoint allows a user to login with email and password.
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "200":
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "60c72b2f9b1e8e1f3c8f9e1f"
+                      name:
+                        type: string
+                        example: "John Doe"
+                      email:
+                        type: string
+                        example: "john.doe@example.com"
+                      bio:
+                        type: string
+                        example: ""
+                      image:
+                        type: string
+                        example: ""
+        "400":
+          description: Invalid email or password
+        "500":
+          description: Internal Server Error
+
+  /api/users/profile:
+    get:
+      tags:
+        - Users
+      summary: Get user profile
+      description: This endpoint retrieves the profile of the logged-in user.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "60c72b2f9b1e8e1f3c8f9e1f"
+                      name:
+                        type: string
+                        example: "John Doe"
+                      email:
+                        type: string
+                        example: "john.doe@example.com"
+                      bio:
+                        type: string
+                        example: ""
+                      image:
+                        type: string
+                        example: ""
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "500":
+          description: Internal Server Error
+
+    put:
+      tags:
+        - Users
+      summary: Update user profile
+      description: This endpoint updates the profile of the logged-in user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Updated user profile
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                password:
+                  type: string
+                  example: "newpassword123"
+                bio:
+                  type: string
+                  example: "Bio of the user"
+                profileImage:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Profile updated successfully"
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "60c72b2f9b1e8e1f3c8f9e1f"
+                      name:
+                        type: string
+                        example: "John Doe"
+                      email:
+                        type: string
+                        example: "john.doe@example.com"
+                      bio:
+                        type: string
+                        example: "Bio of the user"
+                      image:
+                        type: string
+                        example: "profile.jpg"
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "500":
+          description: Internal Server Error
+
+  /api/posts:
+    post:
+      tags:
+        - Posts
+      summary: Create a new post
+      description: This endpoint allows you to create a new post.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Post object that needs to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "My First Post"
+                about:
+                  type: string
+                  example: "This is a brief description of the post."
+                body:
+                  type: string
+                  example: "This is the content of the post."
+                tags:
+                  type: string
+                  example: "tag1, tag2, tag3"
+      responses:
+        "201":
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  title:
+                    type: string
+                    example: "My First Post"
+                  about:
+                    type: string
+                    example: "This is a brief description of the post."
+                  body:
+                    type: string
+                    example: "This is the content of the post."
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                      example: "tag1"
+                  userId:
+                    type: string
+                    example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  name:
+                    type: string
+                    example: "John Doe"
+                  favorites:
+                    type: array
+                    items:
+                      type: string
+                      example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  createdAt:
+                    type: string
+                    example: "2023-01-01T00:00:00.000Z"
+                  updatedAt:
+                    type: string
+                    example: "2023-01-01T00:00:00.000Z"
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+
+    get:
+      tags:
+        - Posts
+      summary: Get all posts with pagination
+      description: This endpoint retrieves all posts with pagination.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 3
+          description: Number of posts per page
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        title:
+                          type: string
+                          example: "My First Post"
+                        about:
+                          type: string
+                          example: "This is a brief description of the post."
+                        body:
+                          type: string
+                          example: "This is the content of the post."
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                            example: "tag1"
+                        userId:
+                          type: string
+                          example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        name:
+                          type: string
+                          example: "John Doe"
+                        favorites:
+                          type: array
+                          items:
+                            type: string
+                            example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        createdAt:
+                          type: string
+                          example: "2023-01-01T00:00:00.000Z"
+                        updatedAt:
+                          type: string
+                          example: "2023-01-01T00:00:00.000Z"
+                  page:
+                    type: integer
+                    example: 1
+                  pages:
+                    type: integer
+                    example: 10
+        "500":
+          description: Internal Server Error
+
+  /api/posts/feed:
+    get:
+      tags:
+        - Posts
+      summary: Get feed of posts
+      description: This endpoint retrieves the feed of posts created by users the current user follows.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 3
+          description: Number of posts per page
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        title:
+                          type: string
+                          example: "My First Post"
+                        about:
+                          type: string
+                          example: "This is a brief description of the post."
+                        body:
+                          type: string
+                          example: "This is the content of the post."
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                            example: "tag1"
+                        userId:
+                          type: string
+                          example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        name:
+                          type: string
+                          example: "John Doe"
+                        favorites:
+                          type: array
+                          items:
+                            type: string
+                            example: "60c72b2f9b1e8e1f3c8f9e1f"
+                        createdAt:
+                          type: string
+                          example: "2023-01-01T00:00:00.000Z"
+                        updatedAt:
+                          type: string
+                          example: "2023-01-01T00:00:00.000Z"
+                  page:
+                    type: integer
+                    example: 1
+                  pages:
+                    type: integer
+                    example: 10
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+
+  /api/posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Get a single post
+      description: This endpoint retrieves a single post by its ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the post to retrieve
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  title:
+                    type: string
+                    example: "My First Post"
+                  about:
+                    type: string
+                    example: "This is a brief description of the post."
+                  body:
+                    type: string
+                    example: "This is the content of the post."
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                      example: "tag1"
+                  userId:
+                    type: string
+                    example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  name:
+                    type: string
+                    example: "John Doe"
+                  favorites:
+                    type: array
+                    items:
+                      type: string
+                      example: "60c72b2f9b1e8e1f3c8f9e1f"
+                  createdAt:
+                    type: string
+                    example: "2023-01-01T00:00:00.000Z"
+                  updatedAt:
+                    type: string
+                    example: "2023-01-01T00:00:00.000Z"
+        "404":
+          description: Post not found
+        "500":
+          description: Internal Server Error
+
+    delete:
+      tags:
+        - Posts
+      summary: Delete a post
+      description: This endpoint deletes a post by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the post to delete
+      responses:
+        "200":
+          description: Post deleted successfully
+        "404":
+          description: Post not found
+        "500":
+          description: Internal Server Error
+
+  /api/posts/favorite/{id}:
+    put:
+      tags:
+        - Posts
+      summary: Favorite a post
+      description: This endpoint allows the current user to favorite a post by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the post to favorite
+      responses:
+        "200":
+          description: Post favorited successfully
+        "404":
+          description: Post not found
+        "500":
+          description: Internal Server Error
+
+  /api/posts/unfavorite/{id}:
+    put:
+      tags:
+        - Posts
+      summary: Unfavorite a post
+      description: This endpoint allows the current user to unfavorite a post by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the post to unfavorite
+      responses:
+        "200":
+          description: Post unfavorited successfully
+        "404":
+          description: Post not found
+        "500":
+          description: Internal Server Error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

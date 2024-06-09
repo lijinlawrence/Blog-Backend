@@ -205,7 +205,7 @@ export const favoritePost = async (req, res) => {
 };
 
 
-// get Usrs favorite Posts
+
 
 
 // Get user's favorite posts with pagination
