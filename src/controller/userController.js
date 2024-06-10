@@ -1,6 +1,6 @@
 import User from "../model/userSchema.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcryptjs';
 
 // Register User
 export const createUser = async (req, res, next) => {
