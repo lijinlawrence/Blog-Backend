@@ -1,7 +1,6 @@
-import { Timestamp } from "mongodb";
 import mongoose from "mongoose";
 
-const postSchema = mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -11,7 +10,6 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-
     body: {
       type: String,
       required: true,
@@ -21,31 +19,40 @@ const postSchema = mongoose.Schema(
       required: false,
     },
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     name: {
       type: String,
       required: true,
     },
-
-    favorites: [{ type: String, 
-                  ref: "User" }],
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
+    favorites: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
+    comments: [
+      {
+        text: {
+          type: String,
+          required: true,
+        },
+        created: {
+          type: Date,
+          default: Date.now,
+        },
+        postedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically creates createdAt and updatedAt fields
   }
 );
 
-const post = mongoose.model("post", postSchema);
+const Post = mongoose.model("Post", postSchema);
 
-export default post;
+export default Post;

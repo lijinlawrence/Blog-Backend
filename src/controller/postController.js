@@ -1,3 +1,4 @@
+import io from "../index.js";
 import Post from "../model/postSchema.js";
 import User from "../model/userSchema.js";
 
@@ -23,7 +24,6 @@ export const createPost = async (req, res, next) => {
       tags: tags.split(",").map((tag) => tag.trim()),
       userId,
       name:user.name,
-      favorites: [], // Initialize favorites field as an empty array
 
      
      
@@ -227,5 +227,149 @@ export const getUserFavoritePosts = async (req, res) => {
   } catch (error) {
     console.error('Error fetching favorite posts:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
+
+// // Add comment to a post
+// export const addComments = async (req, res) => {
+//   const postId = req.params.id;
+//   const userId = req.payload;
+//   const { text } = req.body;
+
+//   if (!text) {
+//     return res.status(400).json({ message: "Comment text is required" });
+//   }
+
+//   try {
+//     const post = await Post.findById(postId);
+
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     const comment = {
+//       text,
+//       postedBy: userId,
+//     };
+
+//     post.comments.push(comment);
+//     await post.save();
+
+//     // Emitting real-time update
+//     io.emit("commentAdded", { postId, comment });
+
+//     res.status(201).json({ message: "Comment added successfully", post });
+//   } catch (error) {
+//     console.error("Error adding comment:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+
+// // Delete a comment from a post
+// export const deleteComment = async (req, res) => {
+//   const postId = req.params.postId;
+//   const commentId = req.params.commentId;
+
+//   try {
+//     const post = await Post.findById(postId);
+
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+
+//     if (commentIndex === -1) {
+//       return res.status(404).json({ message: "Comment not found" });
+//     }
+
+//     // Remove the comment from the post
+//     post.comments.splice(commentIndex, 1);
+//     await post.save();
+
+//     // Emit a real-time update
+//     io.emit("commentDeleted", { postId, commentId });
+
+//     res.status(200).json({ message: "Comment deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting comment:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+
+
+
+
+
+
+// Add comment to a post
+export const addComments = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.payload;
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ message: "Comment text is required" });
+  }
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comment = {
+      text,
+      postedBy: userId,
+    };
+
+    post.comments.push(comment);
+    await post.save();
+
+    // Emit real-time update
+    io.emit("new-comment", post.comments);
+
+    res.status(201).json({ message: "Comment added successfully", post });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Delete a comment from a post
+export const deleteComment = async (req, res) => {
+  const postId = req.params.postId;
+  const commentId = req.params.commentId;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: "Comment not found" })
+    }
+
+    // Remove the comment from the post
+    post.comments.splice(commentIndex, 1);
+    await post.save();
+
+    // Emit a real-time update
+    io.emit("comment-deleted", { postId, commentId });
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
