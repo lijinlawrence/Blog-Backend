@@ -9,7 +9,7 @@ import Yaml from 'yamljs';
 import swaggerUI from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 
-import dbconnect from './config/db.js';
+import dbconnect from './confiq/db.js';
 import userRouter from './router/userRouter.js';
 import postRouter from './router/postRouter.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
